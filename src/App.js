@@ -1,16 +1,46 @@
 import logo from './logo.svg';
 import './App.css';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 function App() {
 
-  const [counter, setCounter] =  useState(0);
+  const [data, setData] = useState()
+
+  const [object, setObject] = useState(
+      {
+        type: 'users',
+        date: Date.now()
+      }
+  )
+  const [coordinates, setCoordinates] = useState({
+    x:0,
+    y:0
+  })
+ const mouseHandler = event =>{
+    setCoordinates({x:event.clientX, y:event.clientY});
+  };
+  useEffect(() => {
+    window.addEventListener('mouseover', mouseHandler);
+  },[])
+  useEffect(() => {
+    fetch(`https://jsonplaceholder.typicode.com/${object.type}`)
+        .then(response => response.json())
+        .then(json => setData(json))
+
+  },[object])
+  function updateObject(type) {
+    setObject((prev) => {
+      return {...prev, type: type}
+    });
+  }
 
   return (
     <div>
-      <h1>Counter: {counter}</h1>
-        <button className="btn">Push</button>
-        <button className="btn">Pop</button>
+        <button onClick={() => updateObject('users')}>users</button>
+        <button onClick={() => updateObject('todos')}>todos</button>
+        <button onClick={() => updateObject('posts')}>posts</button>
+        {/*<pre>{JSON.stringify(data,null,2)}</pre>*/}
+        <pre>{JSON.stringify(coordinates,null,2)}</pre>
     </div>
   );
 }
